@@ -1,5 +1,18 @@
 import type { PetPost } from '../types/PetPost';
-import './PetCard.css';
+import {
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Box,
+  Chip,
+  Button,
+  Stack,
+} from '@mui/material';
+import {
+  CalendarToday as CalendarIcon,
+  Facebook as FacebookIcon,
+} from '@mui/icons-material';
 
 interface PetCardProps {
   post: PetPost;
@@ -18,38 +31,63 @@ export const PetCard = ({ post }: PetCardProps) => {
   };
 
   return (
-    <div className="pet-card">
+    <>
       {post.attachments.map((attachment) => (
-        <div key={attachment.id} className="pet-card-content">
-          <div className="pet-image-container">
-            <img
-              src={attachment.media.image.src}
-              alt={attachment.description}
-              className="pet-image"
-              loading="lazy"
-            />
-          </div>
+        <Card key={attachment.id} elevation={0}>
+          <CardMedia
+            component="img"
+            height="300"
+            image={attachment.media.image.src}
+            alt={attachment.description}
+            sx={{
+              objectFit: 'cover',
+            }}
+          />
           
-          <div className="pet-info">
-            <p className="pet-description">{attachment.description}</p>
-            
-            <div className="pet-meta">
-              <span className="pet-date">
-                📅 {formatDate(post.createdAt)}
-              </span>
-            </div>
-            
-            <a
-              href={attachment.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="pet-link"
+          <CardContent>
+            <Typography
+              variant="body1"
+              color="text.primary"
+              sx={{
+                mb: 2,
+                whiteSpace: 'pre-wrap',
+                lineHeight: 1.6,
+              }}
             >
-              Ver no Facebook →
-            </a>
-          </div>
-        </div>
+              {attachment.description}
+            </Typography>
+            
+            <Box sx={{ mb: 2 }}>
+              <Chip
+                icon={<CalendarIcon sx={{ fontSize: '0.9rem' }} />}
+                label={formatDate(post.createdAt)}
+                size="small"
+                variant="outlined"
+                color="primary"
+              />
+            </Box>
+            
+            <Stack direction="row" spacing={1}>
+              <Button
+                variant="contained"
+                startIcon={<FacebookIcon />}
+                href={attachment.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                fullWidth
+                sx={{
+                  background: 'linear-gradient(45deg, #1877f2 30%, #42a5f5 90%)',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #145dbf 30%, #1e88e5 90%)',
+                  },
+                }}
+              >
+                Ver no Facebook
+              </Button>
+            </Stack>
+          </CardContent>
+        </Card>
       ))}
-    </div>
+    </>
   );
 };

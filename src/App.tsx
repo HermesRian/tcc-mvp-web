@@ -1,8 +1,21 @@
 import { useEffect, useState } from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import {
+  AppBar,
+  Box,
+  Container,
+  CssBaseline,
+  Toolbar,
+  Typography,
+  Alert,
+  Paper,
+} from '@mui/material';
+import { Pets as PetsIcon } from '@mui/icons-material';
 import { PetCard } from './components/PetCard';
+import { PetCardSkeleton } from './components/PetCardSkeleton';
 import { petPostService } from './services/petPostService';
 import type { PetPost } from './types/PetPost';
-import './App.css';
+import { theme } from './theme';
 
 function App() {
   const [posts, setPosts] = useState<PetPost[]>([]);
@@ -28,49 +41,66 @@ function App() {
   }, []);
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <div className="header-content">
-          <h1>🐾 Pets Desaparecidos e Encontrados</h1>
-          <p>Ajude a reunir pets com suas famílias</p>
-        </div>
-      </header>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+        <AppBar position="static" elevation={1} sx={{ backgroundColor: '#ffffff', color: '#050505' }}>
+          <Toolbar>
+            <PetsIcon sx={{ mr: 2, fontSize: 32, color: '#1877f2' }} />
+            <Box>
+              <Typography variant="h6" component="div" sx={{ fontWeight: 700, color: '#050505' }}>
+                Pet App
+              </Typography>
+            </Box>
+          </Toolbar>
+        </AppBar>
 
-      <main className="app-main">
-        <div className="container">
-          {loading && (
-            <div className="loading">
-              <div className="spinner"></div>
-              <p>Carregando posts...</p>
-            </div>
-          )}
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+            py: 4,
+            backgroundColor: '#f0f2f5',
+          }}
+        >
+          <Container maxWidth="lg">
+            {loading && <PetCardSkeleton />}
 
-          {error && (
-            <div className="error">
-              <p>⚠️ {error}</p>
-            </div>
-          )}
+            {error && (
+              <Alert severity="error" sx={{ mb: 3 }}>
+                {error}
+              </Alert>
+            )}
 
-          {!loading && !error && posts.length === 0 && (
-            <div className="empty">
-              <p>📭 Nenhum post encontrado.</p>
-            </div>
-          )}
+            {!loading && !error && posts.length === 0 && (
+              <Paper elevation={0} sx={{ p: 6, textAlign: 'center' }}>
+                <Typography variant="h6" color="text.secondary">
+                  📭 Nenhum post encontrado
+                </Typography>
+              </Paper>
+            )}
 
-          {!loading && !error && posts.length > 0 && (
-            <div className="posts-grid">
-              {posts.map((post) => (
-                <PetCard key={post.id} post={post} />
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
-
-      <footer className="app-footer">
-        <p>Dados sincronizados com Facebook via Graph API</p>
-      </footer>
-    </div>
+            {!loading && !error && posts.length > 0 && (
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: {
+                    xs: '1fr',
+                    sm: 'repeat(2, 1fr)',
+                    md: 'repeat(3, 1fr)',
+                  },
+                  gap: 3,
+                }}
+              >
+                {posts.map((post) => (
+                  <PetCard key={post.id} post={post} />
+                ))}
+              </Box>
+            )}
+          </Container>
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
 }
 
